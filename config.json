@@ -1,0 +1,12 @@
+{
+  "$schema": "./config.schema.json",
+  "active": "default",
+  "profiles": {
+    "default": {
+      "api_base": "",
+      "api_key": "",
+      "pool": [],
+      "effort": "max"
+    }
+  }
+}

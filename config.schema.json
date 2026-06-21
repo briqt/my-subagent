@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "my-subagent config",
+  "description": "Model pool and API configuration for my-subagent. Copy to ~/.config/agent-skills/my-subagent/config.json and fill in credentials.",
+  "type": "object",
+  "properties": {
+    "active": {
+      "type": "string",
+      "description": "Active profile name. Overridden by --profile CLI flag.",
+      "default": "default"
+    },
+    "profiles": {
+      "type": "object",
+      "description": "Named configuration profiles.",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "api_base": {
+            "type": "string",
+            "description": "LiteLLM or compatible API base URL (e.g. http://host:4000)."
+          },
+          "api_key": {
+            "type": "string",
+            "description": "API key for the endpoint."
+          },
+          "pool": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Model names available for dispatch. Tasks are distributed evenly across the pool."
+          },
+          "effort": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "max"],
+            "description": "Default reasoning effort level for dispatched tasks.",
+            "default": "max"
+          }
+        },
+        "required": ["api_base", "api_key", "pool"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["active", "profiles"],
+  "additionalProperties": false
+}
