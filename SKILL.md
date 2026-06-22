@@ -203,6 +203,30 @@ node <skill-dir>/scripts/dispatch.js /tmp/subagent/task/w2_prompt.md --name "w2-
   > /tmp/subagent/task/w2_out.md 2> /tmp/subagent/task/w2.log
 ```
 
+### 并行写隔离
+
+子代理继承主会话的工作目录。多个 worker 并行修改文件时需要隔离，否则后写覆盖先写。
+
+**git 项目**：每个写代码的 worker 分配独立 worktree，prompt 中指定其工作目录。主会话负责合并各 worktree 产物。
+
+```bash
+# 主会话创建 worktree
+git worktree add /tmp/subagent/task/wt1 -b worker-1
+git worktree add /tmp/subagent/task/wt2 -b worker-2
+
+# prompt 中告知 worker：
+#   你的工作目录是 /tmp/subagent/task/wt1，只在此目录内修改文件。
+
+# 完成后主会话合并或 cherry-pick
+```
+
+**非 git 项目**：并行 worker 只做读取和分析，代码修改串行执行（一个 writer 或分波次）。
+
+**判断规则**：
+- 多 worker 读同一目录 → 安全，无需隔离
+- 多 worker 写不同文件 → 通常安全，但建议 prompt 中明确各自 scope
+- 多 worker 可能写同一文件 → 必须隔离（worktree）或串行
+
 ### 多波次
 
 第一波结果不够时，可基于结果追加任务。prompt 中引用前一波的输出文件路径即可：
