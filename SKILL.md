@@ -87,7 +87,7 @@ node <skill-dir>/scripts/dispatch.js <prompt-file> [--name <task-name>] [--profi
 
 **行为：**
 - stdout：子代理的完整输出文本（可直接重定向到文件）
-- stderr：`[profile: xxx]`、`[task: <task-id>]`、`[model: <model-name>]`
+- stderr：`[profile: xxx]`、`[task: <task-id>]`
 - 自动将 prompt 和 output 归档到 `~/.config/agent-skills/my-subagent/tasks/<task-id>/`
 - 自动记录耗时、token 数、模型等元数据
 - 模型从池中均衡选择（最少调用次数优先）

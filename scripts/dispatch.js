@@ -84,7 +84,6 @@ function main() {
   const taskDir = getTaskDir(taskId);
 
   process.stderr.write(`[task: ${taskId}]\n`);
-  process.stderr.write(`[model: ${model}]\n`);
 
   fs.copyFileSync(promptFile, path.join(taskDir, 'prompt.md'));
 
