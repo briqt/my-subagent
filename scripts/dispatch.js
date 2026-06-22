@@ -48,10 +48,38 @@ function parseArgs(argv) {
   return { promptFile: resolved, taskName, profile };
 }
 
+function resolveModel(cfg, modelName) {
+  const pool = cfg.pool || [];
+  for (const entry of pool) {
+    if (typeof entry === 'object' && entry.name === modelName) {
+      return {
+        name: modelName,
+        api_base: entry.api_base || cfg.api_base,
+        api_key: entry.api_key || cfg.api_key,
+      };
+    }
+  }
+  return { name: modelName, api_base: cfg.api_base, api_key: cfg.api_key };
+}
+
+function buildEnv(resolved) {
+  const env = { ...process.env };
+  const set = (key, val) => { if (val) env[key] = val; };
+  set('ANTHROPIC_BASE_URL', resolved.api_base);
+  set('ANTHROPIC_AUTH_TOKEN', resolved.api_key);
+  set('ANTHROPIC_MODEL', resolved.name);
+  set('ANTHROPIC_DEFAULT_OPUS_MODEL', resolved.name);
+  set('ANTHROPIC_DEFAULT_SONNET_MODEL', resolved.name);
+  set('ANTHROPIC_DEFAULT_HAIKU_MODEL', resolved.name);
+  set('CLAUDE_CODE_SUBAGENT_MODEL', resolved.name);
+  return env;
+}
+
 function main() {
   const { promptFile, taskName, profile } = parseArgs(process.argv);
   const cfg = loadConfig(profile);
   const model = selectModel(cfg);
+  const resolved = resolveModel(cfg, model);
   const taskId = generateTaskId();
   const taskDir = getTaskDir(taskId);
 
@@ -72,12 +100,7 @@ function main() {
       `claude -p --output-format json --effort ${effort}`,
       {
         input: prompt,
-        env: {
-          ...process.env,
-          ANTHROPIC_BASE_URL: cfg.api_base,
-          ANTHROPIC_AUTH_TOKEN: cfg.api_key,
-          ANTHROPIC_MODEL: model,
-        },
+        env: buildEnv(resolved),
         encoding: 'utf8',
         maxBuffer: 50 * 1024 * 1024,
         timeout: 600000,

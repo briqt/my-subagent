@@ -25,8 +25,22 @@
           },
           "pool": {
             "type": "array",
-            "items": { "type": "string" },
-            "description": "Model names available for dispatch. Tasks are distributed evenly across the pool."
+            "items": {
+              "oneOf": [
+                { "type": "string" },
+                {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string", "description": "Model name." },
+                    "api_base": { "type": "string", "description": "Override api_base for this model." },
+                    "api_key": { "type": "string", "description": "Override api_key for this model." }
+                  },
+                  "required": ["name"],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "description": "Model names or objects with per-model endpoint overrides. Tasks are distributed evenly across the pool."
           },
           "effort": {
             "type": "string",
@@ -35,7 +49,7 @@
             "default": "max"
           }
         },
-        "required": ["api_base", "api_key", "pool"],
+        "required": ["pool"],
         "additionalProperties": false
       }
     }

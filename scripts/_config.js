@@ -50,13 +50,27 @@ function loadConfig(profileName) {
     process.exit(1);
   }
 
-  if (!cfg.api_base || !cfg.api_key || !cfg.pool || !cfg.pool.length) {
+  if (!cfg.pool || !cfg.pool.length) {
     process.stderr.write(
       `ERROR: Incomplete config in profile "${profile}".\n` +
-      `Required fields: api_base, api_key, pool (non-empty array)\n` +
+      `Required: pool (non-empty array)\n` +
       `Config file: ${source}\n`
     );
     process.exit(1);
+  }
+
+  for (const entry of cfg.pool) {
+    const name = typeof entry === 'object' ? entry.name : entry;
+    const base = (typeof entry === 'object' && entry.api_base) || cfg.api_base;
+    const key = (typeof entry === 'object' && entry.api_key) || cfg.api_key;
+    if (!base || !key) {
+      process.stderr.write(
+        `ERROR: Model "${name}" has no api_base or api_key ` +
+        `(neither in model entry nor profile-level defaults).\n` +
+        `Config file: ${source}\n`
+      );
+      process.exit(1);
+    }
   }
 
   process.stderr.write(`[profile: ${profile}]\n`);
@@ -86,16 +100,21 @@ function saveStats(stats) {
   fs.writeFileSync(getStatsPath(), JSON.stringify(stats, null, 2) + '\n');
 }
 
+function getModelName(entry) {
+  return typeof entry === 'object' ? entry.name : entry;
+}
+
 function selectModel(cfg) {
   const stats = loadStats();
+  const names = cfg.pool.map(getModelName);
   let minCount = Infinity;
-  let selected = cfg.pool[0];
+  let selected = names[0];
 
-  for (const model of cfg.pool) {
-    const count = stats[model] || 0;
+  for (const name of names) {
+    const count = stats[name] || 0;
     if (count < minCount) {
       minCount = count;
-      selected = model;
+      selected = name;
     }
   }
 
