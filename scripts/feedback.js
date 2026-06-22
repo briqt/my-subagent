@@ -51,7 +51,6 @@ function main() {
   process.stderr.write(`[feedback: ${taskId}] score=${score}\n`);
   process.stdout.write(JSON.stringify({
     task_id: meta.task_id,
-    model: meta.model,
     score: meta.score,
     comment: meta.comment,
   }) + '\n');
