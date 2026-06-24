@@ -62,10 +62,9 @@ function loadConfig(profileName) {
   for (const entry of cfg.pool) {
     const name = typeof entry === 'object' ? entry.name : entry;
     const base = (typeof entry === 'object' && entry.api_base) || cfg.api_base;
-    const key = (typeof entry === 'object' && entry.api_key) || cfg.api_key;
-    if (!base || !key) {
+    if (!base) {
       process.stderr.write(
-        `ERROR: Model "${name}" has no api_base or api_key ` +
+        `ERROR: Model "${name}" has no api_base ` +
         `(neither in model entry nor profile-level defaults).\n` +
         `Config file: ${source}\n`
       );
