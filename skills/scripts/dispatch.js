@@ -17,12 +17,15 @@ function parseArgs(argv) {
   let promptFile = null;
   let taskName = null;
   let profile = null;
+  let timeout = 600000;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--name' && args[i + 1]) {
       taskName = args[++i];
     } else if (args[i] === '--profile' && args[i + 1]) {
       profile = args[++i];
+    } else if (args[i] === '--timeout' && args[i + 1]) {
+      timeout = parseInt(args[++i], 10) * 1000;
     } else if (!args[i].startsWith('-') && !promptFile) {
       promptFile = args[i];
     }
@@ -30,7 +33,7 @@ function parseArgs(argv) {
 
   if (!promptFile) {
     process.stderr.write(
-      `Usage: node dispatch.js <prompt-file> [--name <task-name>] [--profile <name>]\n`
+      `Usage: node dispatch.js <prompt-file> [--name <task-name>] [--profile <name>] [--timeout <seconds>]\n`
     );
     process.exit(1);
   }
@@ -45,7 +48,7 @@ function parseArgs(argv) {
     taskName = path.basename(resolved, path.extname(resolved));
   }
 
-  return { promptFile: resolved, taskName, profile };
+  return { promptFile: resolved, taskName, profile, timeout };
 }
 
 function resolveModel(cfg, modelName) {
@@ -76,7 +79,7 @@ function buildEnv(resolved) {
 }
 
 function main() {
-  const { promptFile, taskName, profile } = parseArgs(process.argv);
+  const { promptFile, taskName, profile, timeout } = parseArgs(process.argv);
   const cfg = loadConfig(profile);
   const model = selectModel(cfg);
   const resolved = resolveModel(cfg, model);
@@ -102,7 +105,7 @@ function main() {
         env: buildEnv(resolved),
         encoding: 'utf8',
         maxBuffer: 50 * 1024 * 1024,
-        timeout: 600000,
+        timeout,
       }
     );
     jsonOutput = JSON.parse(stdout);
