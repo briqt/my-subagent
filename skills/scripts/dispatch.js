@@ -17,7 +17,7 @@ function parseArgs(argv) {
   let promptFile = null;
   let taskName = null;
   let profile = null;
-  let timeout = 600000;
+  let timeout = 3600000;
 
   for (let i = 0; i < args.length; i++) {
     if (args[i] === '--name' && args[i + 1]) {

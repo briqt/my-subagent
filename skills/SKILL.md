@@ -83,13 +83,14 @@ node <skill-dir>/scripts/feedback.js "$TASK_ID" <score> "<comment>"
 ## dispatch 命令
 
 ```bash
-node <skill-dir>/scripts/dispatch.js <prompt-file> [--name <task-name>] [--profile <name>]
+node <skill-dir>/scripts/dispatch.js <prompt-file> [--name <task-name>] [--profile <name>] [--timeout <seconds>]
 ```
 
 **参数：**
 - `<prompt-file>` — prompt 文件路径（绝对或相对），文件内容将作为子代理的完整输入
 - `--name` — 任务简称（用于日志和追踪），省略时取文件名
 - `--profile` — 指定配置 profile，省略时使用 active profile
+- `--timeout` — 子代理执行超时，单位秒，默认 3600（60 分钟）
 
 **行为：**
 - stdout：子代理的完整输出文本（可直接重定向到文件）
