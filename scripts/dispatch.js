@@ -179,6 +179,11 @@ function main() {
   incrementModelCount(model);
 
   process.stdout.write(result);
+
+  const scriptDir = __dirname;
+  process.stderr.write(
+    `[feedback] node ${scriptDir}/feedback.js ${taskId} <score> "<comment>"\n`
+  );
 }
 
 main();

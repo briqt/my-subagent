@@ -84,7 +84,8 @@ tasks/
 2. **Execution**: Runs `claude -p --output-format json` with the selected model's env vars
 3. **Archival**: Copies prompt, saves output and metadata to the data directory
 4. **Output**: Streams the result text to stdout (pipe-compatible)
-5. **Feedback**: Optional post-task scoring updates the archived metadata
+5. **Feedback hint**: Prints a ready-to-run feedback command to stderr, prompting the caller to score the task
+6. **Feedback**: Optional post-task scoring updates the archived metadata
 
 The dispatch script is transparent — callers don't know which model handled their task. Stats track distribution for observability.
 
